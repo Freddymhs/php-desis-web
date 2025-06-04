@@ -1,6 +1,7 @@
 <?php
 
-require __DIR__ . '/loaderDotEnv.php';
+require __DIR__ . '/../php/loaderDotEnv.php';
+
 
 function getConnection()
 {

@@ -1,6 +1,6 @@
 <?php
 require __DIR__ . '/../php/loaderDotEnv.php';
-require __DIR__ . '/../php/db.php';
+require __DIR__ . '/../database/db.php';
 
 try {
     $pdo = getConnection();

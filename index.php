@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html>
-<?php include 'php/db.php' ?>
+<?php include 'database/db.php' ?>
 
 <head>
   <link rel="stylesheet" href="css/styles.css">
