@@ -2,7 +2,6 @@
 
 require __DIR__ . '/../php/loaderDotEnv.php';
 
-
 function getConnection()
 {
     static $pdo = null;

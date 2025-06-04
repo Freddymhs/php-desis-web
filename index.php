@@ -1,14 +1,44 @@
+<?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+?>
 <!DOCTYPE html>
 <html>
-<?php include 'database/db.php' ?>
+<?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+?>
+
+<?php include 'database/config.php' ?>
+<?php include 'php/controllers/index.php'; ?>
 
 <head>
   <link rel="stylesheet" href="css/styles.css">
   <title>Formulario de Productos</title>
 </head>
+<script>
+  document.addEventListener('DOMContentLoaded', async () => {
+    try {
+      const response = await fetch('php/controllers/index.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: 'get_bodegas=true',
+      });
+      const data = await response.text().then(text => JSON.parse(text));
+      console.log(data);
+
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  });
+</script>
+
+
 
 <body>
   <form>
+
+
     <h1>Formulario de Producto</h1>
     <div class="row">
       <div class="input-group">
@@ -32,7 +62,7 @@
         </select>
       </div>
       <div class="input-group">
-        // todo cargan con AJAX async al seleccionar bodega
+        <!-- // todo cargan con AJAX async al seleccionar bodega -->
         <label for="office">Sucursal:</label>
         <select id="office" name="office">
           <option value=""></option>

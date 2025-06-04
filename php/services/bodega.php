@@ -1,13 +1,34 @@
 <?php
-function get_bodegas(): string
+
+
+namespace Services;
+
+use PDO;
+use PDOException;
+require_once __DIR__ . '/../../database/config.php';
+
+
+
+class BodegaService
 {
-    try {
-        $pdo = getConnection();
-        $data = $pdo->query('SELECT * FROM bodegas ORDER BY id ASC')->fetchAll();
-        return json_encode($data);
-    } catch (PDOException $e) {
-        throw $e;
+    public function get_bodegas(): array
+    {
+        try {
+            $pdo = getConnection();
+            $stmt = $pdo->query('SELECT * FROM bodegas ORDER BY id ASC');
+            $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            return [
+                'success' => true,
+                'data' => $data
+            ];
+        } catch (PDOException $e) {
+            return [
+                'success' => false,
+                'message' => $e->getMessage()
+            ];
+        }
     }
+
+
 }
-
-

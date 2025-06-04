@@ -1,11 +1,25 @@
 <?php
-function get_sucursales(): string
+namespace Services;
+
+use PDOException;
+require_once __DIR__ . '/../../database/config.php';
+
+class SucursalService
 {
-    try {
-        $pdo = getConnection();
-        $data = $pdo->query('SELECT * FROM sucursales ORDER BY id ASC')->fetchAll();
-        return json_encode($data);
-    } catch (PDOException $e) {
-        throw $e;
+    public function get_sucursales(): string
+    {
+        try {
+            $pdo = getConnection();
+            $data = $pdo->query('SELECT * FROM sucursales ORDER BY id ASC')->fetchAll();
+            return json_encode([
+                'success' => true,
+                'data' => $data
+            ]);
+        } catch (PDOException $e) {
+            return json_encode([
+                'success' => false,
+                'message' => $e->getMessage()
+            ]);
+        }
     }
 }
