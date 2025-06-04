@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+<?php include 'php/db.php' ?>
 
 <head>
   <link rel="stylesheet" href="css/styles.css">
@@ -31,6 +32,7 @@
         </select>
       </div>
       <div class="input-group">
+        // todo cargan con AJAX async al seleccionar bodega
         <label for="office">Sucursal:</label>
         <select id="office" name="office">
           <option value=""></option>

@@ -1,2 +1,4 @@
 noreadme.md
 node_modules
+vendor
+.env

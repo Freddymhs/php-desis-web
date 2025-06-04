@@ -1,0 +1,8 @@
+{
+  "scripts": {
+    "seed": "php database/seed.php"
+  },
+  "require": {
+    "vlucas/phpdotenv": "^5.6"
+  }
+}
