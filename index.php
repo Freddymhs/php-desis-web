@@ -7,28 +7,7 @@
 </head>
 <script>
   document.addEventListener('DOMContentLoaded', async () => {
-    try {
-      const response = await fetch('php/controllers/index.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: 'get_bodegas=true',
-      });
-      const { success, data } = await response.json();
-      const isArray = Array.isArray(data);
-      if (!success || !isArray) return;
-
-      const select = document.getElementById('store');
-      select.innerHTML = '';
-      select.appendChild(new Option('', ''));
-
-      data.map(({ id, nombre }) => select.appendChild(new Option(nombre, id)))
-    } catch (error) {
-      console.error('Error:', error);
-    }
-  });
-</script>
-<script>
-  document.addEventListener('DOMContentLoaded', async () => {
+    // todo -> loading curreny
     try {
       const response = await fetch('php/controllers/index.php', {
         method: 'POST',
@@ -47,24 +26,26 @@
     } catch (error) {
       console.error('Error:', error);
     }
-  });
-</script>
-<script>
-  // todo move to helper
-  const setPlaceholder = (select, text) => {
-    select.innerHTML = `<option value="">${text}</option>`;
-    select.disabled = true;
-  };
-  const setFirstEmpty = (select) => {
-    select.innerHTML = '';
-    select.appendChild(new Option('', ''));
-  }
-  const validateIsNumber = (value) => {
-    const regex = /^[0-9]+$/;
-    return regex.test(value);
-  }
+    // todo -> loading store 
+    try {
+      const response = await fetch('php/controllers/index.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: 'get_bodegas=true',
+      });
+      const { success, data } = await response.json();
+      const isArray = Array.isArray(data);
+      if (!success || !isArray) return;
 
-  document.addEventListener('DOMContentLoaded', () => {
+      const select = document.getElementById('store');
+      select.innerHTML = '';
+      select.appendChild(new Option('', ''));
+
+      data.map(({ id, nombre }) => select.appendChild(new Option(nombre, id)))
+    } catch (error) {
+      console.error('Error:', error);
+    }
+    // todo -> loading office
     const bodegaSelected = document.getElementById('store');
     const sucursalSelected = document.getElementById('office');
 
@@ -96,21 +77,16 @@
         console.error('Error:', error);
       }
     });
-  });
-</script>
-
-<!-- 
- -->
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
+    // todo -> sending form
     const form = document.querySelector('form');
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
 
       const formData = new FormData(form);
+      const isValidForm = validationForm(formData)
+      if (!isValidForm) return;
       formData.append('insert_producto', 'true');
-
       try {
         const response = await fetch('php/controllers/index.php', {
           method: 'POST',
@@ -122,25 +98,18 @@
         const success = result.success && result.id;
 
         if (success) {
+          alert('Producto creado correctamente!');
           form.reset();
-          alert('Producto creado correctamente');
         }
       } catch (error) {
         console.error('Error:', error);
       }
     });
   });
-
 </script>
-
-
-
-
-
 
 <body>
   <form>
-
 
     <h1>Formulario de Producto</h1>
     <div class="row">
@@ -226,6 +195,8 @@
 
     <button type="submit" class="submit">Guardar Producto</button>
   </form>
+  <script src="js/main.js"></script>
+  <script src="js/helper.js"></script>
 </body>
 
 </html>
