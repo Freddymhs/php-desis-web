@@ -49,6 +49,7 @@ form {
   }
 
   .submit {
+    cursor: pointer;
     width: 300px;
     background-color: #1aab8a;
     padding: 10px 40px;

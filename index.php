@@ -1,16 +1,5 @@
-<?php
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-?>
 <!DOCTYPE html>
 <html>
-<?php
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-?>
-
-<?php include 'database/config.php' ?>
-<?php include 'php/controllers/index.php'; ?>
 
 <head>
   <link rel="stylesheet" href="css/styles.css">
@@ -24,14 +13,128 @@ ini_set('display_errors', 1);
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: 'get_bodegas=true',
       });
-      const data = await response.text().then(text => JSON.parse(text));
-      console.log(data);
+      const { success, data } = await response.json();
+      const isArray = Array.isArray(data);
+      if (!success || !isArray) return;
 
+      const select = document.getElementById('store');
+      select.innerHTML = '';
+      select.appendChild(new Option('', ''));
+
+      data.map(({ id, nombre }) => select.appendChild(new Option(nombre, id)))
     } catch (error) {
       console.error('Error:', error);
     }
   });
 </script>
+<script>
+  document.addEventListener('DOMContentLoaded', async () => {
+    try {
+      const response = await fetch('php/controllers/index.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: 'get_monedas=true',
+      });
+      const { success, data } = await response.json();
+      const isArray = Array.isArray(data);
+      if (!success || !isArray) return;
+
+      const select = document.getElementById('currency');
+      select.innerHTML = '';
+      select.appendChild(new Option('', ''));
+
+      data.map(({ id, nombre }) => select.appendChild(new Option(nombre, id)))
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  });
+</script>
+<script>
+  // todo move to helper
+  const setPlaceholder = (select, text) => {
+    select.innerHTML = `<option value="">${text}</option>`;
+    select.disabled = true;
+  };
+  const setFirstEmpty = (select) => {
+    select.innerHTML = '';
+    select.appendChild(new Option('', ''));
+  }
+  const validateIsNumber = (value) => {
+    const regex = /^[0-9]+$/;
+    return regex.test(value);
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const bodegaSelected = document.getElementById('store');
+    const sucursalSelected = document.getElementById('office');
+
+    setPlaceholder(sucursalSelected, 'Selecciona Bodega...');
+    bodegaSelected.addEventListener('change', async ({ target: { value: bodegaId } }) => {
+      if (!bodegaId) {
+        setPlaceholder(sucursalSelected, 'Selecciona Bodega...');
+        return;
+      }
+      if (!validateIsNumber(bodegaId)) return;
+      setPlaceholder(sucursalSelected, 'Cargando...');
+
+      try {
+        const response = await fetch('php/controllers/index.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: `get_sucursales=true&bodega_id=${encodeURIComponent(bodegaId)}`,
+        });
+
+        const { success, data } = await response.json();
+        const isArray = Array.isArray(data);
+        if (!success || !isArray) return;
+
+        setFirstEmpty(sucursalSelected);
+        data.map(({ id, nombre }) => sucursalSelected.appendChild(new Option(nombre, id)))
+        sucursalSelected.disabled = false;
+
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    });
+  });
+</script>
+
+<!-- 
+ -->
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const form = document.querySelector('form');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const formData = new FormData(form);
+      formData.append('insert_producto', 'true');
+
+      try {
+        const response = await fetch('php/controllers/index.php', {
+          method: 'POST',
+          body: new URLSearchParams(formData),
+        });
+
+        const result = await response.json();
+        console.log('Resultado insert:', result);
+        const success = result.success && result.id;
+
+        if (success) {
+          form.reset();
+          alert('Producto creado correctamente');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    });
+  });
+
+</script>
+
+
+
 
 
 
@@ -56,18 +159,13 @@ ini_set('display_errors', 1);
       <div class="input-group">
         <label for="store">Bodega:</label>
         <select id="store" name="store">
-          <option value=""></option>
-          <option value="store1">Bodega 1</option>
-          <option value="store99">Bodega 2</option>
         </select>
       </div>
       <div class="input-group">
         <!-- // todo cargan con AJAX async al seleccionar bodega -->
         <label for="office">Sucursal:</label>
         <select id="office" name="office">
-          <option value=""></option>
-          <option value="office1">Sucursal 1</option>
-          <option value="office99">Sucursal 2</option>
+
         </select>
       </div>
     </div>
@@ -76,10 +174,6 @@ ini_set('display_errors', 1);
       <div class="input-group">
         <label for="currency">Moneda:</label>
         <select id="currency" name="currency">
-          <option value=""></option>
-          <option value="CLP">CLP</option>
-          <option value="USD">USD</option>
-          <option value="EUR">EUR</option>
         </select>
       </div>
 
@@ -93,30 +187,32 @@ ini_set('display_errors', 1);
       <div class="input-group">
         <label>Material del Producto:</label>
         <div class="checkbox-group">
+
           <div class="checkbox-item">
-            <input type="checkbox" id="material1" name="material" value="plastic" />
+            <input type="checkbox" id="material1" name="material[]" value="plastic" />
             <label for="material1">Plástico</label>
           </div>
 
           <div class="checkbox-item">
-            <input type="checkbox" id="material2" name="material" value="metal" />
+            <input type="checkbox" id="material2" name="material[]" value="metal" />
             <label for="material2">Metal</label>
           </div>
 
           <div class="checkbox-item">
-            <input type="checkbox" id="material3" name="material" value="wood" />
+            <input type="checkbox" id="material3" name="material[]" value="wood" />
             <label for="material3">Madera</label>
           </div>
 
           <div class="checkbox-item">
-            <input type="checkbox" id="material4" name="material" value="glass" />
+            <input type="checkbox" id="material4" name="material[]" value="glass" />
             <label for="material4">Vidrio</label>
           </div>
 
           <div class="checkbox-item">
-            <input type="checkbox" id="material5" name="material" value="textile" />
+            <input type="checkbox" id="material5" name="material[]" value="textile" />
             <label for="material5">Textil</label>
           </div>
+
         </div>
       </div>
     </div>

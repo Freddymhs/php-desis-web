@@ -1,1 +1,1 @@
-// todo funciones de validacion
+// todo -> funciones javascript

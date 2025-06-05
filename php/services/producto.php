@@ -21,6 +21,27 @@ class ProductoService
         }
     }
 
+
+    public function producto_code_is_unique(string $codigo): array
+    {
+        try {
+            $pdo = getConnection();
+            $stmt = $pdo->prepare('SELECT COUNT(*) FROM productos WHERE codigo = :codigo');
+            $stmt->execute(['codigo' => $codigo]);
+            $count = $stmt->fetchColumn();
+            $isUnique = $count == 0;
+            return [
+                'success' => true,
+                'isUniqueProduct' => $isUnique
+            ];
+        } catch (PDOException $e) {
+            return [
+                'success' => false,
+                'message' => $e->getMessage()
+            ];
+        }
+    }
+
     public function insert_producto(
         $codigo,
         $nombre,
@@ -34,18 +55,18 @@ class ProductoService
         try {
             $pdo = getConnection();
             $stmt = $pdo->prepare('
-                INSERT INTO productos (codigo_producto, nombre, bodega, sucursal, moneda, precio, materiales, descripcion)
-                VALUES (:codigo, :nombre, :bodega, :sucursal, :moneda, :precio, :materiales, :descripcion)
-            ');
+    INSERT INTO productos (codigo, nombre, bodega_id, sucursal_id, moneda_id, precio, materiales, descripcion)
+    VALUES (:codigo, :nombre, :bodega_id, :sucursal_id, :moneda_id, :precio, :materiales, :descripcion)
+');
 
             $stmt->execute([
                 ':codigo' => $codigo,
                 ':nombre' => $nombre,
-                ':bodega' => $bodega,
-                ':sucursal' => $sucursal,
-                ':moneda' => $moneda,
+                ':bodega_id' => (int) $bodega,
+                ':sucursal_id' => (int) $sucursal,
+                ':moneda_id' => (int) $moneda,
                 ':precio' => $precio,
-                ':materiales' => $materiales,
+                ':materiales' => implode(',', $materiales),
                 ':descripcion' => $descripcion,
             ]);
 
@@ -54,7 +75,7 @@ class ProductoService
             $resultado = new stdClass();
             $resultado->success = true;
             $resultado->id = $id;
-            $resultado->codigo_producto = $codigo;
+            $resultado->codigo = $codigo;
             $resultado->nombre = $nombre;
             $resultado->bodega = $bodega;
             $resultado->sucursal = $sucursal;
@@ -67,10 +88,11 @@ class ProductoService
             return $resultado;
 
         } catch (PDOException $e) {
-            return json_encode([
+            return (object) [
                 'success' => false,
                 'message' => $e->getMessage()
-            ]);
+            ];
         }
     }
+
 }

@@ -1,25 +1,34 @@
 <?php
+
+
 namespace Services;
 
+use PDO;
 use PDOException;
 require_once __DIR__ . '/../../database/config.php';
 
+
+
 class SucursalService
 {
-    public function get_sucursales(): string
+    public function get_sucursales(): array
     {
         try {
             $pdo = getConnection();
-            $data = $pdo->query('SELECT * FROM sucursales ORDER BY id ASC')->fetchAll();
-            return json_encode([
+            $stmt = $pdo->query('SELECT * FROM sucursales ORDER BY id ASC');
+            $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            return [
                 'success' => true,
                 'data' => $data
-            ]);
+            ];
         } catch (PDOException $e) {
-            return json_encode([
+            return [
                 'success' => false,
                 'message' => $e->getMessage()
-            ]);
+            ];
         }
     }
+
+
 }

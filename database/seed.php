@@ -18,7 +18,7 @@ try {
 
     $pdo->exec("INSERT INTO monedas (nombre, simbolo) VALUES
         ('Peso Chileno', 'CLP'),
-        ('Dólar Americano', 'USD'),
+        ('Dólar US', 'USD'),
         ('Euro', 'EUR');
     ");
     echo "Inserted currencies\n";
